@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Roller Coaster Energy - Physics Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .sim-area { position: relative; width: 800px; height: 400px; background: #ecf0f1; border: 2px solid #bdc3c7; overflow: hidden; }
+        #car { width: 30px; height: 20px; background: #e67e22; position: absolute; border-radius: 4px; border: 2px solid #d35400; }
+        .track { fill: none; stroke: #34495e; stroke-width: 4; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Roller Coaster Energy</h1>
+        <p>Conservation of Energy on a Track</p>
+        <a href="../index.html" class="btn" style="background: var(--accent);">Back to Menu</a>
+    </header>
+    <main class="container">
+        <div class="sim-container">
+            <div class="sim-area">
+                <svg width="800" height="400" id="trackSvg">
+                    <path d="M 0 100 Q 200 450 400 200 T 800 300" class="track" id="trackPath"/>
+                </svg>
+                <div id="car"></div>
+            </div>
+            <div class="controls">
+                <button id="launchBtn" class="btn">Launch Car</button>
+                <button id="resetBtn" class="btn" style="background:#95a5a6;">Reset</button>
+                <div class="control-group">
+                    <label>Friction: <span id="fricVal">0</span></label>
+                    <input type="range" id="fricRange" min="0" max="0.05" step="0.001" value="0">
+                </div>
+            </div>
+        </div>
+        <div class="info-section sim-container">
+            <h3>Energy Analysis</h3>
+            <p>Potential Energy is max at the peak. Kinetic Energy is max at the lowest point. Total Energy remains constant in a frictionless environment.</p>
+        </div>
+    </main>
+    <script>
+        const path = document.getElementById('trackPath');
+        const car = document.getElementById('car');
+        const launchBtn = document.getElementById('launchBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const pathLength = path.getTotalLength();
+        
+        let progress = 0;
+        let speed = 0;
+        let isMoving = false;
+        const gravity = 0.5;
+
+        function animate() {
+            if (!isMoving) return;
+
+            const point = path.getPointAtLength(progress);
+            const nextPoint = path.getPointAtLength(Math.min(progress + 1, pathLength));
+            
+            // Slope-based acceleration
+            const slope = (nextPoint.y - point.y);
+            speed += slope * 0.05;
+            
+            // Friction
+            const friction = parseFloat(document.getElementById('fricRange').value);
+            speed *= (1 - friction);
+
+            progress += speed;
+
+            if (progress < 0) { progress = 0; speed = -speed * 0.5; }
+            if (progress > pathLength) { isMoving = false; }
+
+            car.style.left = (point.x - 15) + 'px';
+            car.style.top = (point.y - 20) + 'px';
+            
+            requestAnimationFrame(animate);
+        }
+
+        launchBtn.onclick = () => { if(!isMoving) { speed = 2; isMoving = true; animate(); } };
+        resetBtn.onclick = () => { isMoving = false; progress = 0; speed = 0; const p = path.getPointAtLength(0); car.style.left = (p.x-15)+'px'; car.style.top = (p.y-20)+'px'; };
+        
+        // Init pos
+        resetBtn.onclick();
+    </script>
+</body>
+</html>

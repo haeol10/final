@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collisions Lab - Physics Lab</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Momentum & Collisions</h1>
+        <p>Explore Elastic and Inelastic Collisions</p>
+        <a href="../../index.html" class="btn" style="background: var(--accent); margin-top: 10px;">Back to Menu</a>
+    </header>
+
+    <main class="container">
+        <div class="sim-container">
+            <canvas id="collisionCanvas" width="800" height="300"></canvas>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <strong>Object 1 (Red)</strong>
+                    <label>Mass: <span id="m1Val">1.0</span> kg</label>
+                    <input type="range" id="m1Range" min="1" max="5" step="0.5" value="1">
+                    <label>Velocity: <span id="v1Val">2.0</span> m/s</label>
+                    <input type="range" id="v1Range" min="-5" max="5" step="0.1" value="2">
+                </div>
+                <div class="control-group">
+                    <strong>Object 2 (Blue)</strong>
+                    <label>Mass: <span id="m2Val">1.0</span> kg</label>
+                    <input type="range" id="m2Range" min="1" max="5" step="0.5" value="1">
+                    <label>Velocity: <span id="v2Val">0.0</span> m/s</label>
+                    <input type="range" id="v2Range" min="-5" max="5" step="0.1" value="0">
+                </div>
+                <div class="control-group">
+                    <label for="collisionType">Collision Type</label>
+                    <select id="collisionType">
+                        <option value="elastic">Perfectly Elastic</option>
+                        <option value="inelastic">Perfectly Inelastic</option>
+                    </select>
+                </div>
+                <button id="runBtn" class="btn">Start Simulation</button>
+                <button id="resetBtn" class="btn" style="background: #95a5a6;">Reset</button>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="grid">
+                <div class="card" style="padding: 1rem;">
+                    <h4>Initial Momentum</h4>
+                    <p id="initMom">P = 2.0 kg·m/s</p>
+                </div>
+                <div class="card" style="padding: 1rem;">
+                    <h4>Final Momentum</h4>
+                    <p id="finalMom">P = 2.0 kg·m/s</p>
+                </div>
+                <div class="card" style="padding: 1rem;">
+                    <h4>Energy Status</h4>
+                    <p id="energyStatus">Kinetic Energy Conserved</p>
+                </div>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                <em>Textbook Reference:</em> In a perfectly inelastic collision, two objects stay together after colliding. Momentum is conserved, but kinetic energy is not.
+            </p>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

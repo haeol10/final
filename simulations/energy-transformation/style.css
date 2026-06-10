@@ -1,0 +1,17 @@
+/* Simulation specific styles */
+.info-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+}
+
+#simCanvas {
+    background: #ecf0f1;
+    border: 2px solid #bdc3c7;
+}
+
+.grid {
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 1rem;
+}

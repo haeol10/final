@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Magnetic Field Explorer - Physics Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        #magCanvas { background: #1a1a1a; cursor: grab; }
+        #magCanvas:active { cursor: grabbing; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Magnetic Field Explorer</h1>
+        <p>Interactive Vector Field & Dragable Magnet</p>
+        <a href="../index.html" class="btn" style="background: var(--accent);">Back to Menu</a>
+    </header>
+    <main class="container">
+        <div class="sim-container">
+            <canvas id="magCanvas" width="800" height="500"></canvas>
+            <div class="controls">
+                <button id="toggleLines" class="btn">Toggle Iron Filings</button>
+                <p>Drag the magnet to see the compasses react!</p>
+            </div>
+        </div>
+        <div class="info-section sim-container">
+            <h3>Field Interaction</h3>
+            <p>Every point in space around a magnet has a magnetic field vector. Compasses align themselves with these vectors, pointing from North to South.</p>
+        </div>
+    </main>
+    <script>
+        const canvas = document.getElementById('magCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let magnet = { x: 400, y: 250, w: 120, h: 40, isDragging: false };
+        let showIronFilings = true;
+        const compasses = [];
+        
+        for(let x=30; x<canvas.width; x+=45) {
+            for(let y=30; y<canvas.height; y+=45) {
+                compasses.push({x, y});
+            }
+        }
+
+        canvas.onmousedown = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            if (mx > magnet.x - magnet.w/2 && mx < magnet.x + magnet.w/2 && 
+                my > magnet.y - magnet.h/2 && my < magnet.y + magnet.h/2) {
+                magnet.isDragging = true;
+            }
+        };
+
+        window.onmouseup = () => magnet.isDragging = false;
+        canvas.onmousemove = (e) => {
+            if (!magnet.isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            magnet.x = e.clientX - rect.left;
+            magnet.y = e.clientY - rect.top;
+        };
+
+        document.getElementById('toggleLines').onclick = () => showIronFilings = !showIronFilings;
+
+        function getFieldAt(px, py) {
+            // Pole positions
+            const nPos = { x: magnet.x - magnet.w/4, y: magnet.y };
+            const sPos = { x: magnet.x + magnet.w/4, y: magnet.y };
+
+            // Vectors from poles to point
+            const dNx = px - nPos.x;
+            const dNy = py - nPos.y;
+            const dSx = px - sPos.x;
+            const dSy = py - sPos.y;
+
+            const distN = Math.pow(dNx*dNx + dNy*dNy, 1.5);
+            const distS = Math.pow(dSx*dSx + dSy*dSy, 1.5);
+
+            // North pole repels N-end of compass (outward)
+            // South pole attracts N-end of compass (inward)
+            const vx = (dNx / distN) - (dSx / distS);
+            const vy = (dNy / distN) - (dSy / distS);
+
+            return Math.atan2(vy, vx);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Compasses
+            compasses.forEach(c => {
+                const angle = getFieldAt(c.x, c.y);
+                
+                ctx.save();
+                ctx.translate(c.x, c.y);
+                ctx.rotate(angle);
+                
+                if (showIronFilings) {
+                    ctx.beginPath();
+                    ctx.moveTo(-8, 0); ctx.lineTo(8, 0);
+                    ctx.strokeStyle = "rgba(200, 200, 200, 0.4)";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                } else {
+                    // Needle
+                    ctx.beginPath();
+                    ctx.moveTo(10, 0); ctx.lineTo(-10, -4); ctx.lineTo(-10, 4);
+                    ctx.fillStyle = "#e74c3c"; // North end
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(-10, 0); ctx.lineTo(10, -4); ctx.lineTo(10, 4);
+                    ctx.fillStyle = "#bdc3c7"; // South end
+                    ctx.fill();
+                }
+                ctx.restore();
+            });
+
+            // Draw Magnet
+            ctx.save();
+            ctx.translate(magnet.x, magnet.y);
+            ctx.fillStyle = "#e74c3c";
+            ctx.fillRect(-magnet.w/2, -magnet.h/2, magnet.w/2, magnet.h);
+            ctx.fillStyle = "#bdc3c7";
+            ctx.fillRect(0, -magnet.h/2, magnet.w/2, magnet.h);
+            ctx.fillStyle = "white";
+            ctx.font = "bold 16px Arial";
+            ctx.fillText("N", -magnet.w/3, 5);
+            ctx.fillText("S", magnet.w/6, 5);
+            ctx.strokeStyle = "white"; ctx.strokeRect(-magnet.w/2, -magnet.h/2, magnet.w, magnet.h);
+            ctx.restore();
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>

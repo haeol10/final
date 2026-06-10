@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Universal Gravitation - Physics Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        #gravCanvas { background: #000; cursor: crosshair; }
+        .data-panel { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 5px; color: #000; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Universal Gravitation</h1>
+        <p>Newton's Law: F = G(m1*m2)/r²</p>
+        <a href="../index.html" class="btn" style="background: var(--accent);">Back to Menu</a>
+    </header>
+    <main class="container" style="position: relative;">
+        <div class="sim-container">
+            <canvas id="gravCanvas" width="800" height="400"></canvas>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Mass 1 (Red): <span id="m1Val">100</span></label>
+                    <input type="range" id="m1Range" min="50" max="500" value="100">
+                </div>
+                <div class="control-group">
+                    <label>Mass 2 (Blue): <span id="m2Val">100</span></label>
+                    <input type="range" id="m2Range" min="50" max="500" value="100">
+                </div>
+                <p>Drag the masses to change distance!</p>
+            </div>
+        </div>
+        <div class="info-section sim-container">
+            <h3 id="forceDisplay">Force: 0 N</h3>
+            <p>Gravity is an <strong>attractive force</strong>. As you move objects closer, the force increases exponentially according to the inverse-square law.</p>
+        </div>
+    </main>
+    <script>
+        const canvas = document.getElementById('gravCanvas');
+        const ctx = canvas.getContext('2d');
+        const m1R = document.getElementById('m1Range');
+        const m2R = document.getElementById('m2Range');
+        const fDisp = document.getElementById('forceDisplay');
+
+        let p1 = { x: 250, y: 200, m: 100, color: "#e74c3c", isDragging: false };
+        let p2 = { x: 550, y: 200, m: 100, color: "#3498db", isDragging: false };
+
+        canvas.onmousedown = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            if (Math.hypot(mx - p1.x, my - p1.y) < 30) p1.isDragging = true;
+            else if (Math.hypot(mx - p2.x, my - p2.y) < 30) p2.isDragging = true;
+        };
+
+        window.onmouseup = () => { p1.isDragging = p2.isDragging = false; };
+        canvas.onmousemove = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            if (p1.isDragging) { p1.x = mx; p1.y = my; }
+            if (p2.isDragging) { p2.x = mx; p2.y = my; }
+        };
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            p1.m = parseFloat(m1R.value);
+            p2.m = parseFloat(m2R.value);
+            
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const dist = Math.max(Math.hypot(dx, dy), 40);
+            const G = 5; 
+            const force = (G * p1.m * p2.m) / (dist * dist);
+
+            // Draw Connection Line
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = "rgba(255,255,255,0.2)";
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw Force Vectors
+            const angle = Math.atan2(dy, dx);
+            const vecLen = Math.min(force * 200, 150);
+            
+            // F1 on P1
+            drawArrow(p1.x, p1.y, p1.x + Math.cos(angle) * vecLen, p1.y + Math.sin(angle) * vecLen, p1.color);
+            // F2 on P2
+            drawArrow(p2.x, p2.y, p2.x - Math.cos(angle) * vecLen, p2.y - Math.sin(angle) * vecLen, p2.color);
+
+            // Draw Objects
+            [p1, p2].forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, Math.sqrt(p.m) + 5, 0, Math.PI*2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+
+            fDisp.textContent = `Distance: ${(dist/50).toFixed(2)} m | Gravitational Force: ${(force*100).toFixed(2)} N`;
+            requestAnimationFrame(draw);
+        }
+
+        function drawArrow(fromx, fromy, tox, toy, color){
+            const headlen = 10;
+            const angle = Math.atan2(toy-fromy, tox-fromx);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(fromx, fromy);
+            ctx.lineTo(tox, toy);
+            ctx.lineTo(tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6));
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
+            ctx.stroke();
+        }
+
+        draw();
+    </script>
+</body>
+</html>

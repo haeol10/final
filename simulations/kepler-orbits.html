@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kepler's Orbits - Physics Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Kepler's Laws</h1>
+        <p>Planetary Motion & Elliptical Orbits</p>
+        <a href="../index.html" class="btn" style="background: var(--accent);">Back to Menu</a>
+    </header>
+    <main class="container">
+        <div class="sim-container">
+            <canvas id="orbitCanvas" width="800" height="400"></canvas>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Eccentricity: <span id="eVal">0.5</span></label>
+                    <input type="range" id="eRange" min="0" max="0.9" step="0.01" value="0.5">
+                </div>
+                <div class="control-group">
+                    <label>Semi-major axis (a): <span id="aVal">150</span></label>
+                    <input type="range" id="aRange" min="50" max="180" step="1" value="150">
+                </div>
+            </div>
+        </div>
+        <div class="info-section sim-container">
+            <h3>Law of Areas</h3>
+            <p>A line from the sun to a planet sweeps out equal areas during equal times. Planets move faster when closer to the sun (perihelion).</p>
+        </div>
+    </main>
+    <script>
+        const canvas = document.getElementById('orbitCanvas');
+        const ctx = canvas.getContext('2d');
+        const eRange = document.getElementById('eRange');
+        const aRange = document.getElementById('aRange');
+
+        let angle = 0;
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const a = parseFloat(aRange.value);
+            const e = parseFloat(eRange.value);
+            const b = a * Math.sqrt(1 - e*e);
+            const focus = a * e;
+
+            ctx.translate(canvas.width/2, canvas.height/2);
+
+            // Sun (Focus)
+            ctx.beginPath();
+            ctx.arc(focus, 0, 10, 0, Math.PI*2);
+            ctx.fillStyle = "#f1c40f";
+            ctx.fill();
+
+            // Orbit path
+            ctx.beginPath();
+            ctx.ellipse(0, 0, a, b, 0, 0, Math.PI*2);
+            ctx.strokeStyle = "rgba(255,255,255,0.3)";
+            ctx.stroke();
+
+            // Planet
+            const r = (a * (1 - e*e)) / (1 + e * Math.cos(angle));
+            const px = r * Math.cos(angle) + focus;
+            const py = r * Math.sin(angle);
+
+            ctx.beginPath();
+            ctx.arc(px, py, 6, 0, Math.PI*2);
+            ctx.fillStyle = "#3498db";
+            ctx.fill();
+
+            // Speed variation (Kepler's 2nd Law)
+            const speed = 0.05 * (1 / (r/a)); 
+            angle += speed;
+
+            ctx.setTransform(1,0,0,1,0,0);
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Braking Distance - Physics Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .road { width: 800px; height: 100px; background: #34495e; position: relative; border-top: 2px solid white; border-bottom: 2px solid white; margin-top: 50px; }
+        .car { width: 40px; height: 20px; background: #e74c3c; position: absolute; top: 40px; left: 0; transition: left 0.1s linear; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Braking & Impulse</h1>
+        <p>Stopping Distance vs Velocity</p>
+        <a href="../index.html" class="btn" style="background: var(--accent);">Back to Menu</a>
+    </header>
+    <main class="container">
+        <div class="sim-container">
+            <div class="road">
+                <div class="car" id="brakingCar"></div>
+            </div>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Initial Speed (km/h): <span id="speedVal">50</span></label>
+                    <input type="range" id="speedRange" min="20" max="100" value="50">
+                </div>
+                <button id="brakeBtn" class="btn">Apply Brakes</button>
+            </div>
+        </div>
+        <div class="info-section sim-container">
+            <h3 id="distDisplay">Braking Distance: 0 m</h3>
+            <p>Braking distance is proportional to the square of the velocity (d ∝ v²). Doubling the speed quadruples the stopping distance.</p>
+        </div>
+    </main>
+    <script>
+        const car = document.getElementById('brakingCar');
+        const speedRange = document.getElementById('speedRange');
+        const brakeBtn = document.getElementById('brakeBtn');
+        const distDisp = document.getElementById('distDisplay');
+
+        let isBraking = false;
+
+        brakeBtn.onclick = () => {
+            if (isBraking) return;
+            isBraking = true;
+            const v = parseFloat(speedRange.value);
+            const dist = (v * v) / 250 * 20; // Scaled for pixels
+            
+            car.style.transition = `left ${v/20}s ease-out`;
+            car.style.left = dist + 'px';
+            
+            distDisp.textContent = `Braking Distance: ${(v * v / 250).toFixed(1)} m`;
+
+            setTimeout(() => {
+                isBraking = false;
+                car.style.transition = 'none';
+                car.style.left = '0';
+            }, 3000);
+        };
+    </script>
+</body>
+</html>

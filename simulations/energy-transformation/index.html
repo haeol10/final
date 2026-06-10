@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Transformation - Physics Lab</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Energy Transformation</h1>
+        <p>GPE ↔ Kinetic Energy Conversion</p>
+        <a href="../../index.html" class="btn" style="background: var(--accent); margin-top: 10px;">Back to Menu</a>
+    </header>
+
+    <main class="container">
+        <div class="sim-container">
+            <canvas id="simCanvas" width="800" height="400"></canvas>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="heightRange">Initial Height (m)</label>
+                    <input type="range" id="heightRange" min="50" max="350" value="300">
+                    <span id="heightVal">3.0 m</span>
+                </div>
+                <div class="control-group">
+                    <label for="massRange">Mass (kg)</label>
+                    <input type="range" id="massRange" min="1" max="10" value="5">
+                    <span id="massVal">5.0 kg</span>
+                </div>
+                <button id="startBtn" class="btn">Drop Object</button>
+                <button id="resetBtn" class="btn" style="background: #95a5a6;">Reset</button>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>Simulation Data</h3>
+            <div class="grid">
+                <div class="card" style="padding: 10px; border-left: 5px solid var(--secondary);">
+                    <strong>Potential Energy (GPE):</strong> <span id="gpeDisplay">0</span> J
+                </div>
+                <div class="card" style="padding: 10px; border-left: 5px solid var(--accent);">
+                    <strong>Kinetic Energy (KE):</strong> <span id="keDisplay">0</span> J
+                </div>
+                <div class="card" style="padding: 10px; border-left: 5px solid #27ae60;">
+                    <strong>Total Energy:</strong> <span id="totalDisplay">0</span> J
+                </div>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                <em>Concept from Textbook:</em> According to the law of conservation of energy, the amount of energy in a closed system must be constant. As the object falls, GPE transforms into KE.
+            </p>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

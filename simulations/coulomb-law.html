@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Coulomb's Law - Physics Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Coulomb's Law</h1>
+        <p>Electric Force between Charges</p>
+        <a href="../index.html" class="btn" style="background: var(--accent);">Back to Menu</a>
+    </header>
+    <main class="container">
+        <div class="sim-container">
+            <canvas id="coulombCanvas" width="800" height="300"></canvas>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Charge 1 (µC): <span id="q1Val">5</span></label>
+                    <input type="range" id="q1Range" min="-10" max="10" value="5">
+                </div>
+                <div class="control-group">
+                    <label>Charge 2 (µC): <span id="q2Val">-5</span></label>
+                    <input type="range" id="q2Range" min="-10" max="10" value="-5">
+                </div>
+            </div>
+        </div>
+        <div class="info-section sim-container">
+            <h3 id="cForceDisplay">Force: 0 N</h3>
+            <p>Like charges repel (+/+ or -/-), while opposite charges attract (+/-).</p>
+        </div>
+    </main>
+    <script>
+        const canvas = document.getElementById('coulombCanvas');
+        const ctx = canvas.getContext('2d');
+        const q1R = document.getElementById('q1Range');
+        const q2R = document.getElementById('q2Range');
+        const fDisp = document.getElementById('cForceDisplay');
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const q1 = parseFloat(q1R.value);
+            const q2 = parseFloat(q2R.value);
+            const r = 200; // Fixed distance for simplicity
+            const k = 90; // Scaled constant
+
+            const force = (k * q1 * q2) / (r/20);
+            fDisp.textContent = `Force: ${Math.abs(force).toFixed(2)} N (${force < 0 ? 'Attraction' : 'Repulsion'})`;
+
+            const x1 = canvas.width/2 - r/2;
+            const x2 = canvas.width/2 + r/2;
+            const y = canvas.height/2;
+
+            // Draw charges
+            ctx.beginPath(); ctx.arc(x1, y, 20, 0, Math.PI*2); ctx.fillStyle = q1 > 0 ? "#e74c3c" : "#3498db"; ctx.fill();
+            ctx.fillStyle = "white"; ctx.fillText(q1 > 0 ? "+" : "-", x1-3, y+3);
+            
+            ctx.beginPath(); ctx.arc(x2, y, 20, 0, Math.PI*2); ctx.fillStyle = q2 > 0 ? "#e74c3c" : "#3498db"; ctx.fill();
+            ctx.fillStyle = "white"; ctx.fillText(q2 > 0 ? "+" : "-", x2-3, y+3);
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>

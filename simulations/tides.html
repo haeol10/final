@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tidal Simulation - Physics Lab</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        #tideCanvas { background: #001f3f; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tidal Simulation</h1>
+        <p>Moon's Gravitational Influence on Oceans</p>
+        <a href="../index.html" class="btn" style="background: var(--accent);">Back to Menu</a>
+    </header>
+    <main class="container">
+        <div class="sim-container">
+            <canvas id="tideCanvas" width="800" height="400"></canvas>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Moon Distance: <span id="distVal">250</span></label>
+                    <input type="range" id="distRange" min="150" max="350" value="250">
+                </div>
+            </div>
+        </div>
+        <div class="info-section sim-container">
+            <h3>Tidal Bulge</h3>
+            <p>Gravity pulls the oceans toward the moon, while centrifugal force (or differential gravity) creates a bulge on the opposite side.</p>
+        </div>
+    </main>
+    <script>
+        const canvas = document.getElementById('tideCanvas');
+        const ctx = canvas.getContext('2d');
+        const distRange = document.getElementById('distRange');
+        
+        let angle = 0;
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.translate(canvas.width/2, canvas.height/2);
+
+            const dist = parseFloat(distRange.value);
+            const mx = dist * Math.cos(angle);
+            const my = dist * Math.sin(angle);
+
+            // Moon
+            ctx.beginPath(); ctx.arc(mx, my, 15, 0, Math.PI*2); ctx.fillStyle = "#bdc3c7"; ctx.fill();
+
+            // Earth (Solid)
+            ctx.beginPath(); ctx.arc(0, 0, 50, 0, Math.PI*2); ctx.fillStyle = "#2ecc71"; ctx.fill();
+
+            // Oceans (Bulge)
+            ctx.save();
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 70, 55, 0, 0, Math.PI*2);
+            ctx.strokeStyle = "rgba(52, 152, 219, 0.6)";
+            ctx.lineWidth = 10;
+            ctx.stroke();
+            ctx.restore();
+
+            angle += 0.01;
+            ctx.setTransform(1,0,0,1,0,0);
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>
